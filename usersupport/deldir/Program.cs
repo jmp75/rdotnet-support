@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RDotNet;
+using CommonSupportLib;
 
 namespace deldir
 {
@@ -12,7 +13,18 @@ namespace deldir
    {
       static void Main(string[] args)
       {
-         var setupStr = @"library(deldir)
+         SupportHelper.SetupPath();
+         using (REngine engine = REngine.CreateInstance("RDotNet"))
+         {
+            engine.Initialize();
+            //DoTest(engine);
+            ReproDiscussion528955(engine);
+         }
+      }
+
+      private static void DoTest(REngine engine)
+      {
+          var setupStr = @"library(deldir)
 set.seed(421)
 x <- runif(20)
 y <- runif(20)
@@ -26,34 +38,33 @@ z <- deldir(x,y,rw=c(0,1,0,1),dpl=list(ndx=2,ndy=2))
 w <- tile.list(z)
 ";
 
-         SetupPath();
-         using (REngine engine = REngine.CreateInstance("RDotNet"))
-         {
-            engine.Initialize();
-            engine.Evaluate(setupStr);
-            var res = new List<List<Tuple<double, double>>>();
-            var n = engine.Evaluate("length(w)").AsInteger()[0];
-            for (int i = 1; i <= n; i++)
-            {
-               var x = engine.Evaluate("w[[" + i + "]]$x").AsNumeric().ToArray();
-               var y = engine.Evaluate("w[[" + i + "]]$y").AsNumeric().ToArray();
-               var t = x.Zip(y, (first, second) => Tuple.Create(first, second)).ToList();
-               res.Add(t);
-            }
-         }
+          engine.Evaluate(setupStr);
+          var res = new List<List<Tuple<double, double>>>();
+          var n = engine.Evaluate("length(w)").AsInteger()[0];
+          for (int i = 1; i <= n; i++)
+          {
+              var x = engine.Evaluate("w[[" + i + "]]$x").AsNumeric().ToArray();
+              var y = engine.Evaluate("w[[" + i + "]]$y").AsNumeric().ToArray();
+              var t = x.Zip(y, (first, second) => Tuple.Create(first, second)).ToList();
+              res.Add(t);
+          }
       }
 
-      public static void SetupPath()
+      private static void ReproIssue77(REngine engine)
       {
-         var oldPath = System.Environment.GetEnvironmentVariable("PATH");
+         object expr = engine.Evaluate("function(k) substitute(bar(x) = k)");
+         Console.WriteLine(expr ?? "null");
+      }
 
-         var rPath = System.Environment.Is64BitProcess ? @"C:\Program Files\R\R-3.0.2\bin\x64" : @"C:\Program Files\R\R-3.0.2\bin\i386";
-
-         if (Directory.Exists(rPath) == false)
-            throw new DirectoryNotFoundException(string.Format("Could not found the specified path to the directory containing R.dll: {0}", rPath));
-
-         var newPath = string.Format("{0}{1}{2}", rPath, System.IO.Path.PathSeparator, oldPath);
-         System.Environment.SetEnvironmentVariable("PATH", newPath);
+      private static void ReproDiscussion528955(REngine engine)
+      {
+         engine.Evaluate("a <- 1");
+         engine.Evaluate("a <- a+1");
+         NumericVector v1 = engine.GetSymbol("a").AsNumeric();
+         bool eq = 2.0 == v1[0];
+         engine.Evaluate("a <- a+1");
+         NumericVector v2 = engine.GetSymbol("a").AsNumeric();
+         eq = 3.0 == v2[0];
       }
 
    }
