@@ -20,7 +20,8 @@ namespace deldir
          {
             engine.Initialize();
             //DoTest(engine);
-            ReproWorkitem45(engine);
+            //ReproWorkitem45(engine);
+            TestMultiThreads(engine);
          }
       }
 
@@ -279,5 +280,45 @@ w <- tile.list(z)
 
       #endregion
 
+      #region concurrency tests
+      private static void TestMultiThreads(REngine engine)
+      {
+         engine.Evaluate("x <- rnorm(10000)");
+         var blah = engine.GetSymbol("x").AsNumeric().ToArrayFast();
+
+         double[][] res = new double[2][];
+         // Can two threads access in parallel the same
+         Parallel.For(0, 2, i => readNumericX(i, res, engine));
+
+         engine.Evaluate("x <- list()");
+         engine.Evaluate("x[[1]] <- rnorm(10000)");
+         engine.Evaluate("x[[2]] <- rnorm(10000)");
+
+         // Can two threads access in parallel the same list
+         // Usually bombs, though passes sometimes.
+         // The console output would report the following:
+         //Error: unprotect_ptr: pointer not found
+         //Error: R_Reprotect: only 3 protected items, can't reprotect index 9
+         //Error: unprotect_ptr: pointer not found
+         //Parallel.For(0, 2, i => readNumericList(i, res, engine));
+
+         // And in seqence, but from other threads - seems to work consistently
+         Parallel.For(0, 1, i => readNumericList(i, res, engine));
+         Parallel.For(1, 2, i => readNumericList(i, res, engine));
+
+         Console.WriteLine(res[1][1]);
+      }
+
+      private static void readNumericList(long i, double[][] res, REngine engine)
+      {
+         res[i] = engine.Evaluate("x[["+(i+1).ToString()+"]]").AsNumeric().ToArrayFast();
+      }
+
+      private static void readNumericX(long i, double[][] res, REngine engine)
+      {
+         res[i] = engine.GetSymbol("x").AsNumeric().ToArrayFast();
+      }
+
+      #endregion
    }
 }
