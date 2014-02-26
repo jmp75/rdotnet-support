@@ -21,7 +21,8 @@ namespace deldir
             engine.Initialize();
             //DoTest(engine);
             //ReproWorkitem45(engine);
-            TestMultiThreads(engine);
+            ReproWorkitem22(engine);
+            //TestMultiThreads(engine);
          }
       }
 
@@ -154,6 +155,65 @@ w <- tile.list(z)
          // the statement engine.Evaluate("p") does not behave the same as p (or print(p)) directly in the R console.
          engine.Evaluate("dev.off()");
       }
+
+      private static void ReproWorkitem22(REngine engine)
+      {
+         var statements = @"
+parameters <- data.frame(name=paste('x', 1:4, sep=''), 
+  min = c(1, -10, 1, 0.5), 
+  value= c(700, 0, 100, 2), 
+  max = c(1500, 5, 500, 4), 
+  stringsAsFactors=FALSE)
+
+f <- function(i, p) {
+  runif(1, p[i,'min'], p[i,'max'])
+}
+
+";
+         var df = engine.Evaluate(statements);
+         var rndParams = "parameters$value <- as.numeric(lapply(1:nrow(parameters), FUN=f, parameters))";
+         engine.Evaluate("set.seed(0)");
+         for (int i = 0; i < 1000; i++)
+         {
+            engine.Evaluate(rndParams);
+            //engine.Evaluate("print(parameters)");
+            GetDataFrame("parameters", engine);
+         }
+      }
+
+      private static void GetDataFrame(string sexpression, REngine engine)
+      {
+         var dataFrame = engine.Evaluate(sexpression).AsDataFrame();
+         SimpleHyperCube s = convert(dataFrame);
+      }
+
+      private static SimpleHyperCube convert(DataFrame dataFrame)
+      {
+         dynamic df = dataFrame;
+         object[] colnames = Enumerable.ToArray(SymbolicExpressionExtension.AsVector(df.names));
+         object[] tmp = Enumerable.ToArray(SymbolicExpressionExtension.AsVector(df.name));
+         var varnames = Array.ConvertAll(tmp, x => (string)x);
+         SimpleHyperCube s = new SimpleHyperCube(varnames);
+         var rows = dataFrame.GetRows();
+         foreach (var vn in varnames)
+         {
+            dynamic row = rows.First(x => ((string)((dynamic)x).name == vn));
+            s.SetMinMaxValue(vn, row.min, row.max, row.value);
+         }
+         return s;
+      }
+
+      public class SimpleHyperCube
+      {
+         public SimpleHyperCube(string[] varnames)
+         {
+         }
+
+         public void SetMinMaxValue(string name, double min, double max, double value)
+         {
+         }
+      }
+
 
       private static void ReproWorkitem43(REngine engine)
       {

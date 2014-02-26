@@ -1,4 +1,4 @@
-﻿#I "../packages/RProvider.1.0.5/lib"
+﻿#I "../packages/RProvider.1.0.6/lib"
 
 #r "RDotNet.FSharp"
 #r "RDotNet.dll"
