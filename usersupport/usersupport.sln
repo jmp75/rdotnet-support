@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "deldir", "deldir\deldir.csproj", "{8712F989-F628-4131-9CA8-872B7864E78C}"
 EndProject
@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0FD19A
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonSupportLib", "CommonSupportLib\CommonSupportLib.csproj", "{18048E1B-A51C-48A0-AD6B-44DD604CEF58}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RProviderSupport", "RProviderSupport\RProviderSupport.fsproj", "{B122EDAA-3AD5-4E89-857F-9421EDF992AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +30,10 @@ Global
 		{18048E1B-A51C-48A0-AD6B-44DD604CEF58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18048E1B-A51C-48A0-AD6B-44DD604CEF58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18048E1B-A51C-48A0-AD6B-44DD604CEF58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B122EDAA-3AD5-4E89-857F-9421EDF992AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B122EDAA-3AD5-4E89-857F-9421EDF992AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B122EDAA-3AD5-4E89-857F-9421EDF992AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B122EDAA-3AD5-4E89-857F-9421EDF992AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
