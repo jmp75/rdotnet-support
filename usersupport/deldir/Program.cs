@@ -16,12 +16,13 @@ namespace deldir
       static void Main(string[] args)
       {
          SupportHelper.SetupPath();
-         using (REngine engine = REngine.CreateInstance("RDotNet"))
+         using (REngine engine = REngine.GetInstance())
          {
             engine.Initialize();
             //DoTest(engine);
             //ReproWorkitem45(engine);
-            ReproWorkitem22(engine);
+            //ReproWorkitem22(engine);
+            ReproTreeEnquiry(engine);
             //TestMultiThreads(engine);
          }
       }
@@ -154,6 +155,16 @@ w <- tile.list(z)
          // engine.Evaluate("dev.copy(png, '" + fname + "')");
          // the statement engine.Evaluate("p") does not behave the same as p (or print(p)) directly in the R console.
          engine.Evaluate("dev.off()");
+      }
+
+      private static void ReproTreeEnquiry(REngine e)
+      {
+         e.Evaluate("data(cpus, package='MASS')");
+         e.Evaluate("library(tree)");
+         e.Evaluate("cpus.ltr <- tree(log10(perf) ~ syct+mmin+mmax+cach+chmin+chmax, cpus)");
+         var irtr = e.Evaluate("ir.tr <- tree(Species ~., iris)");
+         var aList = irtr.AsList();
+         var theDataFrane = aList[0].AsDataFrame();
       }
 
       private static void ReproWorkitem22(REngine engine)
