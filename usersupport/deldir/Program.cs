@@ -22,7 +22,7 @@ namespace deldir
             //DoTest(engine);
             //ReproWorkitem45(engine);
             //ReproWorkitem22(engine);
-            ReproTreeEnquiry(engine);
+            ReproDiscussion537259(engine);
             //TestMultiThreads(engine);
          }
       }
@@ -159,12 +159,23 @@ w <- tile.list(z)
 
       private static void ReproTreeEnquiry(REngine e)
       {
-         e.Evaluate("data(cpus, package='MASS')");
          e.Evaluate("library(tree)");
-         e.Evaluate("cpus.ltr <- tree(log10(perf) ~ syct+mmin+mmax+cach+chmin+chmax, cpus)");
          var irtr = e.Evaluate("ir.tr <- tree(Species ~., iris)");
-         var aList = irtr.AsList();
-         var theDataFrane = aList[0].AsDataFrame();
+         // the following will print a human readable tree to the console output
+         e.Evaluate("print(ir.tr)");
+         var aList = irtr.AsList(); // May work only with the latest dev code
+         // for R.NET 1.5.5 you may need to do instead:
+         aList = e.Evaluate("as.list(tree(Species ~., iris))").AsList();
+         var theDataFrame = aList[0].AsDataFrame();
+         // Further processing of theDataFrame, etc.
+      }
+
+      private static void ReproDiscussion537259(REngine e)
+      {
+         e.Evaluate("library(rJava)");
+         e.Evaluate(".jinit()");
+         e.Evaluate("f <- .jnew('java/awt/Frame','Hello')");
+         e.Evaluate(".jcall(f,,'setVisible',TRUE)");
       }
 
       private static void ReproWorkitem22(REngine engine)
