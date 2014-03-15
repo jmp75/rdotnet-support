@@ -22,7 +22,7 @@ namespace deldir
             //DoTest(engine);
             //ReproWorkitem45(engine);
             //ReproWorkitem22(engine);
-            ReproTreeEnquiry(engine);
+            ReproDiscussion539094(engine);
             //TestMultiThreads(engine);
          }
       }
@@ -164,7 +164,17 @@ w <- tile.list(z)
          e.Evaluate("cpus.ltr <- tree(log10(perf) ~ syct+mmin+mmax+cach+chmin+chmax, cpus)");
          var irtr = e.Evaluate("ir.tr <- tree(Species ~., iris)");
          var aList = irtr.AsList();
+         // for R.NET 1.5.5 you may need:
+         // var aList = e.Evaluate("as.list(tree(Species ~., iris))").AsList();
          var theDataFrane = aList[0].AsDataFrame();
+      }
+
+      private static void ReproDiscussion539094(REngine e)
+      {
+         e.Evaluate("library(Rcpp)");
+         e.Evaluate("setwd('c:/tmp'");
+         e.Evaluate("sourceCpp('fibonacci.cpp')");
+         var x = e.Evaluate("fibonacci(7)").AsNumeric();
       }
 
       private static void ReproWorkitem22(REngine engine)
