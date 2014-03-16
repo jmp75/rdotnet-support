@@ -174,7 +174,7 @@ w <- tile.list(z)
       private static void ReproDiscussion539094(REngine e)
       {
          e.Evaluate("library(Rcpp)");
-         e.Evaluate("setwd('c:/tmp'");
+         e.Evaluate("setwd('c:/tmp')");
          e.Evaluate("sourceCpp('fibonacci.cpp')");
          var x = e.Evaluate("fibonacci(7)").AsNumeric();
       }
