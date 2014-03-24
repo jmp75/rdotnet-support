@@ -7,8 +7,8 @@ clr.ImportExtensions(System.Linq) # This needs to happen *before* the functions 
 import System
 clr.AddReferenceToFileAndPath(r'C:\src\codeplex\rdotnet\R.NET\bin\Debug\RDotNet.dll')
 import RDotNet
-clr.ImportExtensions(RDotNet)
 from RDotNet import *
+clr.ImportExtensions(RDotNet)
 from System import GC
 from System.Linq import Enumerable
 REngine.SetEnvironmentVariables()
