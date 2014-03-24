@@ -22,6 +22,7 @@ namespace deldir
             //DoTest(engine);
             //ReproWorkitem45(engine);
             //ReproWorkitem22(engine);
+            ReproDiscussion539094(engine);
             ReproDiscussion537259(engine);
             //TestMultiThreads(engine);
          }
@@ -168,6 +169,14 @@ w <- tile.list(z)
          aList = e.Evaluate("as.list(tree(Species ~., iris))").AsList();
          var theDataFrame = aList[0].AsDataFrame();
          // Further processing of theDataFrame, etc.
+      }
+
+      private static void ReproDiscussion539094(REngine e)
+      {
+         e.Evaluate("library(Rcpp)");
+         e.Evaluate("setwd('c:/tmp')");
+         e.Evaluate("sourceCpp('fibonacci.cpp')");
+         var x = e.Evaluate("fibonacci(7)").AsNumeric();
       }
 
       private static void ReproDiscussion537259(REngine e)
