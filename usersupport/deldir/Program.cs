@@ -23,11 +23,26 @@ namespace deldir
             //DoTest(engine);
             //ReproWorkitem45(engine);
             //ReproWorkitem22(engine);
+
+            ReproDiscussion540017(engine);
+            //ReproDiscussion539094(engine);
+            //ReproDiscussion537259(engine);
             //ReproDiscussion539094(e);
             //ReproDiscussion537259(e);
             ReproMultipleAppDomains(e);
             //TestMultiThreads(engine);
          }
+      }
+
+      private static void ReproDiscussion540017(REngine e)
+      {
+          e.Evaluate("library(sn)");
+          e.Evaluate("data(wines, package='sn')");
+          e.Evaluate("X <- model.matrix(~ phenols + wine, data=wines)");
+          e.Evaluate("fit <- msn.mle(x=X, y=cbind(wines$acidity, wines$alcohol), opt.method='BFGS')");
+          var beta = e.Evaluate("fit$dp$beta").AsNumericMatrix();
+          var value = beta[0,1];
+          var betaNames = e.Evaluate("rownames(fit$dp$beta)").AsCharacter().ToArray();
       }
 
       public class Job : MarshalByRefObject
