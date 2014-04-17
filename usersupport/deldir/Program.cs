@@ -8,6 +8,8 @@ using RDotNet;
 using CommonSupportLib;
 using System.Collections;
 using System.Threading;
+using System.Reflection;
+using RDotNet.Devices;
 
 namespace deldir
 {
@@ -15,10 +17,9 @@ namespace deldir
    {
       static void Main(string[] args)
       {
-         SupportHelper.SetupPath();
-         using (REngine engine = REngine.GetInstance())
+         REngine.SetEnvironmentVariables();
+         using (REngine e = REngine.GetInstance())
          {
-            engine.Initialize();
             //DoTest(engine);
             //ReproWorkitem45(engine);
             //ReproWorkitem22(engine);
@@ -26,6 +27,9 @@ namespace deldir
             ReproDiscussion540017(engine);
             //ReproDiscussion539094(engine);
             //ReproDiscussion537259(engine);
+            //ReproDiscussion539094(e);
+            //ReproDiscussion537259(e);
+            ReproMultipleAppDomains(e);
             //TestMultiThreads(engine);
          }
       }
@@ -40,6 +44,45 @@ namespace deldir
           var value = beta[0,1];
           var betaNames = e.Evaluate("rownames(fit$dp$beta)").AsCharacter().ToArray();
       }
+
+      public class Job : MarshalByRefObject
+      {
+
+         // uses R.NET here
+         public void Execute()
+         {
+            var engine = InitREngine();
+            engine.Evaluate("x <- 5");
+         }
+
+         // initializes REngine
+         private REngine InitREngine()
+         {
+            var engine = REngine.GetInstance(initialize: false);
+            engine.Initialize(null, new NullCharacterDevice());  // real char device?
+            AppDomain.CurrentDomain.DomainUnload += (EventHandler)((o, e) => engine.Dispose());
+            return engine;
+         }
+      }
+
+       private static void ReproMultipleAppDomains(REngine e)
+       {
+          TestAppDomain("test1");  // works
+          TestAppDomain("test2");  // hangs at the last line in Job.Execute()
+       }
+       private static void TestAppDomain(string jobName)
+       {
+          var domainSetup = new AppDomainSetup();
+          domainSetup.ApplicationBase = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+          AppDomain ad = AppDomain.CreateDomain(jobName, AppDomain.CurrentDomain.Evidence, domainSetup);
+
+          var type = typeof(Job);
+          var jd = (Job)ad.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName, true, BindingFlags.CreateInstance, null,
+                              new object[] { }, null, null);
+          jd.Execute();
+          AppDomain.Unload(ad);
+       }
+
 
       private static void DoTest(REngine engine)
       {

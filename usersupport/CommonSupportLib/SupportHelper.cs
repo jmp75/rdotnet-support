@@ -9,6 +9,7 @@ namespace CommonSupportLib
 {
     public class SupportHelper
     {
+       [Obsolete("Use REngine.SetEnvironmentVariable instead", true)]
         public static void SetupPath()
         {
             var oldPath = System.Environment.GetEnvironmentVariable("PATH");
