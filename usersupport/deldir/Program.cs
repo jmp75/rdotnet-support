@@ -26,6 +26,12 @@ namespace deldir
 
             ReproInMemoryDataFrameCreation(e);
             //ReproMultipleAppDomains(e);
+            ReproDiscussion540017(e);
+            //ReproDiscussion539094(engine);
+            //ReproDiscussion537259(engine);
+            //ReproDiscussion539094(e);
+            //ReproDiscussion537259(e);
+            ReproMultipleAppDomains(e);
             //TestMultiThreads(engine);
          }
       }
