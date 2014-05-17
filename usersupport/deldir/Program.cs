@@ -24,7 +24,7 @@ namespace deldir
             //ReproWorkitem45(engine);
             //ReproWorkitem22(engine);
 
-            ReproDiscussion540017(engine);
+            ReproDiscussion540017(e);
             //ReproDiscussion539094(engine);
             //ReproDiscussion537259(engine);
             //ReproDiscussion539094(e);
@@ -431,7 +431,7 @@ f <- function(i, p) {
       private static void TestMultiThreads(REngine engine)
       {
          engine.Evaluate("x <- rnorm(10000)");
-         var blah = engine.GetSymbol("x").AsNumeric().ToArrayFast();
+         var blah = engine.GetSymbol("x").AsNumeric().ToArray();
 
          double[][] res = new double[2][];
          // Can two threads access in parallel the same
@@ -458,12 +458,12 @@ f <- function(i, p) {
 
       private static void readNumericList(long i, double[][] res, REngine engine)
       {
-         res[i] = engine.Evaluate("x[["+(i+1).ToString()+"]]").AsNumeric().ToArrayFast();
+         res[i] = engine.Evaluate("x[["+(i+1).ToString()+"]]").AsNumeric().ToArray();
       }
 
       private static void readNumericX(long i, double[][] res, REngine engine)
       {
-         res[i] = engine.GetSymbol("x").AsNumeric().ToArrayFast();
+         res[i] = engine.GetSymbol("x").AsNumeric().ToArray();
       }
 
       #endregion
