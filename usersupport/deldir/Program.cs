@@ -24,14 +24,46 @@ namespace deldir
             //ReproWorkitem45(engine);
             //ReproWorkitem22(engine);
 
-            ReproDiscussion540017(engine);
-            //ReproDiscussion539094(engine);
-            //ReproDiscussion537259(engine);
-            //ReproDiscussion539094(e);
-            //ReproDiscussion537259(e);
-            ReproMultipleAppDomains(e);
+            ReproInMemoryDataFrameCreation(e);
+            //ReproMultipleAppDomains(e);
             //TestMultiThreads(engine);
          }
+      }
+
+      private static void ReproInMemoryDataFrameCreation(REngine e)
+      {
+
+         e.Evaluate("f <- function(a) {if (length(a)!= 1) stop('What goes on?')}");
+         var f = e.Evaluate("f").AsFunction();
+         try
+         {
+            e.Evaluate("f(letters[1:3])");
+         }
+         catch (EvaluationException)
+         {
+         }
+         f.Invoke(e.CreateCharacterVector(new[] { "blah" }));
+         f.Invoke(e.CreateCharacterVector(new[] { "blah", "blah" }));
+
+         // IEnumerable[] columns, string[] columnNames = null, string[] rowNames = null, bool checkRows = false, bool checkNames = true, bool stringsAsFactors = true);
+         var columns = new[] {
+            new[]{1,2,3,4,5},
+            new[]{1,2,3,4,5},
+            new[]{1,2,3,4,5}
+         };
+         var df = e.CreateDataFrame(columns, new[] { "a", "b", "c" });
+         columns[1] = new[] { 1, 2, 3 };
+         object blah;
+         try
+         {
+            df = e.CreateDataFrame(columns, new[] { "a", "b", "c" });
+            blah = df[1, 1];
+         }
+         catch
+         {
+         }
+         df = e.CreateDataFrame(columns, new[] { "a", "b", "c" });
+         blah = df[1, 1];
       }
 
       private static void ReproDiscussion540017(REngine e)
@@ -431,7 +463,7 @@ f <- function(i, p) {
       private static void TestMultiThreads(REngine engine)
       {
          engine.Evaluate("x <- rnorm(10000)");
-         var blah = engine.GetSymbol("x").AsNumeric().ToArrayFast();
+         var blah = engine.GetSymbol("x").AsNumeric().ToArray();
 
          double[][] res = new double[2][];
          // Can two threads access in parallel the same
@@ -458,12 +490,12 @@ f <- function(i, p) {
 
       private static void readNumericList(long i, double[][] res, REngine engine)
       {
-         res[i] = engine.Evaluate("x[["+(i+1).ToString()+"]]").AsNumeric().ToArrayFast();
+         res[i] = engine.Evaluate("x[["+(i+1).ToString()+"]]").AsNumeric().ToArray();
       }
 
       private static void readNumericX(long i, double[][] res, REngine engine)
       {
-         res[i] = engine.GetSymbol("x").AsNumeric().ToArrayFast();
+         res[i] = engine.GetSymbol("x").AsNumeric().ToArray();
       }
 
       #endregion
