@@ -25,6 +25,9 @@ namespace deldir
             //ReproWorkitem22(engine);
 
             ReproDiscussion569196(e);
+            //ReproInMemoryDataFrameCreation(e);
+            //ReproMultipleAppDomains(e);
+            //ReproDiscussion540017(e);
             //ReproDiscussion539094(engine);
             //ReproDiscussion537259(engine);
             //ReproDiscussion539094(e);
@@ -74,6 +77,42 @@ namespace deldir
          return PredictedData;
       }
 
+
+      private static void ReproInMemoryDataFrameCreation(REngine e)
+      {
+
+         e.Evaluate("f <- function(a) {if (length(a)!= 1) stop('What goes on?')}");
+         var f = e.Evaluate("f").AsFunction();
+         try
+         {
+            e.Evaluate("f(letters[1:3])");
+         }
+         catch (EvaluationException)
+         {
+         }
+         f.Invoke(e.CreateCharacterVector(new[] { "blah" }));
+         f.Invoke(e.CreateCharacterVector(new[] { "blah", "blah" }));
+
+         // IEnumerable[] columns, string[] columnNames = null, string[] rowNames = null, bool checkRows = false, bool checkNames = true, bool stringsAsFactors = true);
+         var columns = new[] {
+            new[]{1,2,3,4,5},
+            new[]{1,2,3,4,5},
+            new[]{1,2,3,4,5}
+         };
+         var df = e.CreateDataFrame(columns, new[] { "a", "b", "c" });
+         columns[1] = new[] { 1, 2, 3 };
+         object blah;
+         try
+         {
+            df = e.CreateDataFrame(columns, new[] { "a", "b", "c" });
+            blah = df[1, 1];
+         }
+         catch
+         {
+         }
+         df = e.CreateDataFrame(columns, new[] { "a", "b", "c" });
+         blah = df[1, 1];
+      }
 
       private static void ReproDiscussion540017(REngine e)
       {
