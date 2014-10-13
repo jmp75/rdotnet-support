@@ -24,15 +24,56 @@ namespace deldir
             //ReproWorkitem45(engine);
             //ReproWorkitem22(engine);
 
-            ReproDiscussion540017(e);
+            ReproDiscussion569196(e);
             //ReproDiscussion539094(engine);
             //ReproDiscussion537259(engine);
             //ReproDiscussion539094(e);
             //ReproDiscussion537259(e);
-            ReproMultipleAppDomains(e);
+            //ReproMultipleAppDomains(e);
             //TestMultiThreads(engine);
          }
       }
+
+      // https://rdotnet.codeplex.com/discussions/569196
+      private static void ReproDiscussion569196(REngine engine)
+      {
+         // UserReported(engine);         
+         engine.Evaluate("library(forecast)");
+         engine.Evaluate("snaiveRes <- snaive(wineind)");
+         engine.Evaluate("str(snaiveRes)");
+         
+      }
+
+      private static DataFrame UserReported(REngine engine)
+      {
+         // Incomplete data and repro info.
+         // See https://rdotnet.codeplex.com/discussions/569196
+         NumericVector PreprocessedValue = null;
+         DataFrame PredictedData = null;
+
+         // Some info was missing. Make up.
+         string StartDate = "2001-01-01";
+         double[] PreProcessedList = new[] { 1.1, 7.3, 4.5, 7.4, 11.23, 985.44 };
+         string days = "2"; string interval = "3";
+
+
+         PreprocessedValue = engine.CreateNumericVector(PreProcessedList);
+         // Assign the Utilization value to R variable UtilValue
+         engine.SetSymbol("PreprocessedValue", PreprocessedValue);
+         engine.Evaluate("library(forecast)");
+         engine.Evaluate("StartDate <- as.Date('" + StartDate + "') + " + days);
+         engine.Evaluate("size = length(seq(from=as.Date('" + StartDate + "'), by='" + "day" + "', to=as.Date(StartDate)))");
+         engine.Evaluate("startDate <- as.POSIXct('" + StartDate + "')");
+         engine.Evaluate("endDate <- StartDate + as.difftime(size, units='" + "days" + "')");
+         engine.Evaluate("PredictDate = seq(from=StartDate, by=" + interval + "*60, to=endDate)");
+         engine.Evaluate("freq <- ts(PreprocessedValue, frequency = 20)");
+         engine.Evaluate("forecastnavie <-snaive(freq, Datapoints)");
+         engine.Evaluate("PredictValue = (forecastnavie$mean)");
+         engine.Evaluate("PredictedData = cbind(PredictValue, data.frame(PredictDate))");
+         PredictedData = engine.Evaluate("PredictedData").AsDataFrame();
+         return PredictedData;
+      }
+
 
       private static void ReproDiscussion540017(REngine e)
       {
