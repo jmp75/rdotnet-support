@@ -457,7 +457,7 @@ f <- function(i, p) {
          Size = 0;
          if (KeepAlive.Count != 0)
          {
-            engine.Close();
+            //engine.Close();
             engine.Dispose();
             GC.Collect();
             GC.WaitForPendingFinalizers();
