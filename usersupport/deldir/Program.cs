@@ -24,7 +24,7 @@ namespace deldir
             //ReproWorkitem45(engine);
             //ReproWorkitem22(engine);
 
-            ReproDiscussion569196(e);
+            ReproDiscussion30824095(e);
             //ReproInMemoryDataFrameCreation(e);
             //ReproMultipleAppDomains(e);
             //ReproDiscussion540017(e);
@@ -35,6 +35,35 @@ namespace deldir
             //ReproMultipleAppDomains(e);
             //TestMultiThreads(engine);
          }
+      }
+
+      private static void ReproDiscussion30824095(REngine e)
+      {
+          e.Evaluate("library(cluster)");
+          e.Evaluate("library(rrcov)");
+
+          // plot from R
+          //to show outlier with method : classic & robust Mve 
+
+          e.Evaluate("n <- 100 ; spread <- (n/2 - abs(1:n - n/2))/n * 4");
+          e.Evaluate("X <- data.frame(1:n + spread * rnorm(n), 2 * 1:n + spread * rnorm(n))");
+
+          int xAxis = 1;
+          int yAxis = 2;
+          e.Evaluate("x<-X[," + xAxis + "] ");
+          e.Evaluate("y<-X[," + yAxis + "] ");
+          e.Evaluate("shape <- cov(X)");
+          e.Evaluate("center<- colMeans(X)");
+          e.Evaluate("d2.95 <- qchisq(0.95, df = 2)");
+          //e.Evaluate("gr<- grid(lty=3,col='lightgray', equilogs = 'TRUE')");
+          //dataform.rconn.Evaluate("mtext('with classical (red) and robust (blue)')");
+          e.Evaluate("plot(x,y, main='Draw Ellipse ', pch=19,col='black', type='p')");
+          e.Evaluate("elp<- unname(ellipsoidPoints(shape, d2.95,center))");
+          e.Evaluate(" lines(elp, col='red' , lty=7 , lwd=2)");
+          //e.Evaluate("lines(e)");
+          //e.Evaluate("lines(ellipsoidPoints(mve@cov, d2 = d2.95, loc=mve@center), col='blue', lty='7' , lwd='2') ");
+          // axGraphicsDevice2.RemoveFromConnector();
+          e.Evaluate("dev.off()");
       }
 
       // https://rdotnet.codeplex.com/discussions/569196

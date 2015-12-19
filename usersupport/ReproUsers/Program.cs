@@ -14,7 +14,7 @@ namespace ReproUsers
             REngine.SetEnvironmentVariables();
             using (REngine e = REngine.GetInstance())
             {
-                ReproIssue169(e);
+                ReproStackOverflow_34355201(e);
             }
             //ReproDiscussion435478();
         }
@@ -28,6 +28,33 @@ namespace ReproUsers
             GenericVector dataset111 = engine.GetSymbol("ff").AsList();
             NumericVector v = dataset111[0].AsNumeric();
             double firstval = v[0];
+        }
+
+        private static void ReproStackOverflow_34355201(REngine engine)
+        {
+            engine.AutoPrint = true;
+            //samples taken from ?fscores man page in package mirt
+            engine.Evaluate("library(mirt)");
+            // 'Science' is a prepackage sample data in mirt; you can use 'engine.CreateDataFrame' in C# to create your own if need be.
+            engine.Evaluate("mod <- mirt(Science, 1)");
+            engine.Evaluate("class(mod)");
+            S4Object modcs = engine.GetSymbol("mod").AsS4();
+
+            // TODO - noticed 2015-12 that R.NET 1.6.5, HasSlot causes a stack imbalance warning. To unit test.
+            // Normally should do:
+            // if (modcs.HasSlot("Fit"))
+
+            IDictionary<string, string> slotTypes = modcs.GetSlotTypes();
+            if (slotTypes.Keys.Contains("Fit"))
+            {
+                GenericVector fit = modcs["Fit"].AsList();
+                // should check logLik in fit.Names;
+                double logLik = fit["logLik"].AsNumeric()[0];
+            }
+            engine.Evaluate("tabscores <- fscores(mod, full.scores = FALSE)");
+            engine.Evaluate("head(tabscores)");
+            engine.Evaluate("class(tabscores)");
+            NumericMatrix tabscorescs = engine.GetSymbol("tabscores").AsNumericMatrix();
         }
 
         private static void ReproDiscussion435478()
