@@ -26,18 +26,46 @@ namespace ReproUsers
             Console.WriteLine("********************************");
             using (REngine e = REngine.GetInstance())
             {
-                ReproGH97(e);
+                ReproAutoPrint(e);
             }
             //ReproDiscussion435478();
+        }
+
+        private static void ReproAutoPrint(REngine engine)
+        {
+            engine.Initialize();
+            SymbolicExpression expression;
+            engine.AutoPrint = false;
+
+            Console.WriteLine("engine.AutoPrint = false");
+
+            Console.WriteLine("In: mtc <-head(mtcars)");
+            engine.Evaluate("mtc <-head(mtcars)");
+            Console.WriteLine("In: a <- mtc ");
+            engine.Evaluate("a <- mtc ");
+            Console.WriteLine("In: mtc");
+            engine.Evaluate("mtc");
+            Console.WriteLine("In: print(mtc)");
+            engine.Evaluate("print(mtc)");
+
+            engine.AutoPrint = true;
+            Console.WriteLine("engine.AutoPrint = true");
+
+            Console.WriteLine("In: mtc <-head(mtcars)");
+            engine.Evaluate("mtc <-head(mtcars)");
+            Console.WriteLine("In: a <- mtc ");
+            engine.Evaluate("a <- mtc ");
+            Console.WriteLine("In: mtc");
+            engine.Evaluate("mtc");
+            Console.WriteLine("In: print(mtc)");
+            engine.Evaluate("print(mtc)");
+
         }
 
         private static void ReproGH97(REngine engine)
         {
             // https://github.com/jmp75/rdotnet/issues/97
             SymbolicExpression expression;
-
-            REngine.SetEnvironmentVariables();
-            engine = REngine.GetInstance();
             engine.Initialize();
             engine.Evaluate("x <- data.frame(c1 = c('a', 'b'), stringsAsFactors = FALSE)");
             engine.Evaluate("y <- data.frame(x = c('a', 'b'), stringsAsFactors = TRUE)");
