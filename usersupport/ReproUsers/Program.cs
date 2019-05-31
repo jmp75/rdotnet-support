@@ -12,13 +12,16 @@ namespace ReproUsers
     {
         static void Main(string[] args)
         {
-            // devel is a prerepease of 3.6 on my machine:
-            string rPath = "C:\\Program Files\\R\\R-devel\\bin\\x64";
-            string rHome = "C:\\Program Files\\R\\R-devel";
-            //rPath = "C:\\Program Files\\R\\R-35~1.2\\bin\\x64";
-            //rHome = "C:\\Program Files\\R\\R-35~1.2";
-            //rPath = "C:\\Program Files\\R\\R-34~1.4\\bin\\x64";
-            //rHome = "C:\\Program Files\\R\\R-34~1.4";
+            string rPath = "C:\\Progra~1\\R\\R-36~1.0\\bin\\x64";
+            string rHome = "C:\\Progra~1\\R\\R-36~1.0";
+            //rPath = "C:\\Progra~1\\R\\R-35~1.2\\bin\\x64";
+            //rHome = "C:\\Progra~1\\R\\R-35~1.2";
+            //rPath = "C:\\Progra~1\\R\\R-34~1.4\\bin\\x64";
+            //rHome = "C:\\Progra~1\\R\\R-34~1.4";
+            rPath = "C:\\Progra~1\\R\\R-34~1.4\\bin\\i386";
+            rHome = "C:\\Progra~1\\R\\R-34~1.4";
+            //rPath = "C:\\Progra~1\\R\\R-36~1.0\\bin\\i386";
+            //rHome = "C:\\Progra~1\\R\\R-36~1.0";
             REngine.SetEnvironmentVariables(rPath, rHome);
             var log = NativeUtility.SetEnvironmentVariablesLog;
             Console.WriteLine("********************************");
@@ -26,7 +29,8 @@ namespace ReproUsers
             Console.WriteLine("********************************");
             using (REngine e = REngine.GetInstance())
             {
-                ReproAutoPrint(e);
+                ReproGH97(e);
+                //ReproAutoPrint(e);
             }
             //ReproDiscussion435478();
         }
