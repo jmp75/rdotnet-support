@@ -18,8 +18,8 @@ namespace ReproUsers
             //rHome = "C:\\Progra~1\\R\\R-35~1.2";
             //rPath = "C:\\Progra~1\\R\\R-34~1.4\\bin\\x64";
             //rHome = "C:\\Progra~1\\R\\R-34~1.4";
-            rPath = "C:\\Progra~1\\R\\R-34~1.4\\bin\\i386";
-            rHome = "C:\\Progra~1\\R\\R-34~1.4";
+            //rPath = "C:\\Progra~1\\R\\R-34~1.4\\bin\\i386";
+            //rHome = "C:\\Progra~1\\R\\R-34~1.4";
             //rPath = "C:\\Progra~1\\R\\R-36~1.0\\bin\\i386";
             //rHome = "C:\\Progra~1\\R\\R-36~1.0";
             REngine.SetEnvironmentVariables(rPath, rHome);
@@ -29,7 +29,7 @@ namespace ReproUsers
             Console.WriteLine("********************************");
             using (REngine e = REngine.GetInstance())
             {
-                ReproGH97(e);
+                ReproGH99(e);
                 //ReproAutoPrint(e);
             }
             //ReproDiscussion435478();
@@ -65,6 +65,56 @@ namespace ReproUsers
             engine.Evaluate("print(mtc)");
 
         }
+
+        private static void ReproGH99(REngine engine)
+        {
+            // https://github.com/jmp75/rdotnet/issues/99
+            SymbolicExpression expression;
+            engine.Initialize();
+            engine.AutoPrint = true;
+
+            engine.Evaluate("install.packages('climatol')");
+            engine.Evaluate("library(climatol)");
+
+            expression = engine.GetSymbol("x");
+            Console.WriteLine("Values as characters:");
+            Console.WriteLine(expression.AsDataFrame()[0][0]);
+            Console.WriteLine(expression.AsDataFrame()[0][1]);
+            Console.WriteLine("*********************");
+            expression = engine.GetSymbol("y");
+            Console.WriteLine("Values as factor:");
+            Console.WriteLine(expression.AsDataFrame()[0][0]);
+            Console.WriteLine(expression.AsDataFrame()[0][1]);
+            Console.WriteLine("*********************");
+            expression = engine.GetSymbol("c1");
+            Console.WriteLine("Values direct from column:");
+            Console.WriteLine(expression.AsCharacter()[0]);
+            Console.WriteLine(expression.AsCharacter()[1]);
+            Console.WriteLine("*********************");
+
+            Console.WriteLine("");
+            Console.WriteLine("*********************");
+            Console.WriteLine("Now going for a second round");
+            Console.WriteLine("*********************");
+            expression = engine.GetSymbol("x");
+            Console.WriteLine("Values as characters:");
+            Console.WriteLine(expression.AsDataFrame()[0][0]);
+            Console.WriteLine(expression.AsDataFrame()[0][1]);
+            Console.WriteLine("*********************");
+            expression = engine.GetSymbol("y");
+            Console.WriteLine("Values as factor:");
+            Console.WriteLine(expression.AsDataFrame()[0][0]);
+            Console.WriteLine(expression.AsDataFrame()[0][1]);
+            Console.WriteLine("*********************");
+            expression = engine.GetSymbol("c1");
+            Console.WriteLine("Values direct from column:");
+            Console.WriteLine(expression.AsCharacter()[0]);
+            Console.WriteLine(expression.AsCharacter()[1]);
+            Console.WriteLine("*********************");
+
+
+        }
+
 
         private static void ReproGH97(REngine engine)
         {
